@@ -2,6 +2,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.FileWriter;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -14,6 +15,7 @@ import javax.swing.KeyStroke;
 public class Notepad extends JFrame{
 	
 	public Notepad() {
+		JTextArea jtextarea = new JTextArea();
 		
 		setTitle("Notepad");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -44,6 +46,24 @@ public class Notepad extends JFrame{
 		
 		JMenuItem saveItem = new JMenuItem("Save");
 		saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		
+		saveItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					FileWriter fw = new FileWriter("Notepad");
+					String text = jtextarea.getText();
+					fw.write(text);
+					fw.close();
+					
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+				
+			}
+		});
+		
 		fileMenu.add(saveItem);
 		
 		JMenuItem saveAsItem = new JMenuItem("Save As ...");
@@ -167,6 +187,10 @@ public class Notepad extends JFrame{
 		helpMenu.add(aboutNotepadItem);
 		
 		setJMenuBar(jMenuBar);
+		
+//		JTextArea jtextarea = new JTextArea();
+//		jtextarea.setBounds(20,30, 200,200);  
+		add(jtextarea);
 		
 		setVisible(true);
 		
