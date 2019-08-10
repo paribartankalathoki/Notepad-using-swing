@@ -2,15 +2,23 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Scanner;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Notepad extends JFrame{
 	
@@ -44,6 +52,41 @@ public class Notepad extends JFrame{
 		newWindowItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK));
 		fileMenu.add(newWindowItem);
 		
+		JMenuItem openItem = new JMenuItem("Open ...");
+		openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		
+		openItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChoser = new JFileChooser(new File("D:\\"));
+				fileChoser.setDialogTitle("Select a file");
+				fileChoser.setFileFilter(new FileNameExtensionFilter("Text File (*.txt)", "txt"));
+				fileChoser.setFileFilter(new FileNameExtensionFilter("Word File (*.docx)", "docx"));
+				int result = fileChoser.showOpenDialog(null);
+				if (JFileChooser.APPROVE_OPTION == result) {
+					File file = fileChoser.getSelectedFile();
+					jtextarea.setText("");
+					Scanner textChar = null;
+					try {
+						textChar = new Scanner(file);
+						while(textChar.hasNext()) {
+							String line = textChar.nextLine();
+							jtextarea.append(line+"\n");
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					} finally {
+						textChar.close();
+					}
+				}
+				
+			}
+		});
+		
+		fileMenu.add(openItem);
+		
+		
 		JMenuItem saveItem = new JMenuItem("Save");
 		saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		
@@ -68,6 +111,30 @@ public class Notepad extends JFrame{
 		
 		JMenuItem saveAsItem = new JMenuItem("Save As ...");
 		saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK));
+		
+		saveAsItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileSaver = new JFileChooser(new File("D:\\"));
+				fileSaver.setDialogTitle("Save As ");
+				fileSaver.setFileFilter(new FileNameExtensionFilter("Text File (*.txt)", "txt"));
+				int result = fileSaver.showOpenDialog(null);
+				if (result == JFileChooser.APPROVE_OPTION) {
+					String content = jtextarea.getText();
+					File file = fileSaver.getSelectedFile();
+					try {
+						FileWriter fw = new FileWriter(file.getPath());
+						fw.write(content);
+						fw.flush();
+						fw.close();
+					} catch (Exception e2) {
+						JOptionPane.showMessageDialog(null, e2.getMessage());
+					}
+				}
+			}
+		});
+		
 		fileMenu.add(saveAsItem);
 		
 		JMenuItem pageSetupItem = new JMenuItem("Page Setup ...");
@@ -123,7 +190,7 @@ public class Notepad extends JFrame{
 		findItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
 		editMenu.add(findItem);
 		
-		JMenuItem findNextItem = new JMenuItem("Find Next");
+		JMenuItem findNextItem = new JMenuItem("Find j");
 		findNextItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
 		editMenu.add(findNextItem);
 		
